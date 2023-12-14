@@ -12,14 +12,13 @@
         <router-link to="/sellers">商家</router-link>
       </div>
     </div>
-    <div class="content"></div>
-    <router-view />
+    <router-view :seller="seller" />
   </div>
 </template>
 
 <script>
-import CHeader from '@/components/Header/'
 import axios from 'axios'
+import CHeader from '@/components/Header/'
 
 const ERR_CODE = 0
 
@@ -41,8 +40,6 @@ export default {
       const { data } = await axios.get('/api/sellers')
 
       if (data.errNo !== ERR_CODE) return false
-
-      console.log(data.data)
 
       this.seller = data.data
     }

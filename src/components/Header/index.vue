@@ -14,7 +14,13 @@
           {{ seller.description }} / {{ seller.deliveryTime }}分钟送达
         </p>
         <div v-if="seller.supports" class="supportsBox">
-          <i class="supportIcon" :class="classMap[seller.supports[0].type]"></i>
+          <LeftIcon
+            :iconType="seller.supports[0].type"
+            :imageName="1"
+            :imageWidth="12"
+            :imageHeight="12"
+            :marginRight="4"
+          />
           <span class="supportText">{{ seller.supports[0].description }}</span>
         </div>
       </div>
@@ -60,7 +66,13 @@
                 v-for="(support, index) of seller.supports"
                 :key="index"
               >
-                <i class="supportIcon" :class="classMap[support.type]"></i>
+                <LeftIcon
+                  :iconType="support.type"
+                  :imageName="2"
+                  :imageWidth="16"
+                  :imageHeight="16"
+                  :marginRight="6"
+                />
                 <span class="supportText">{{ support.description }}</span>
               </li>
             </ul>
@@ -84,11 +96,13 @@
 
 <script type="text/javascript">
 import Star from '@/components/Star/'
+import LeftIcon from '@/components/LeftIcon/'
 
 export default {
   name: 'CommonHeader',
   components: {
-    Star
+    Star,
+    LeftIcon
   },
   props: {
     seller: {
@@ -196,32 +210,6 @@ export default {
     }
   }
 
-  .supportIcon {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    background: no-repeat;
-    vertical-align: -3px;
-    margin-right: 4px;
-    background-size: 12px 12px;
-
-    &.decrease {
-      .background-image('../images/decrease_1');
-    }
-    &.discount {
-      .background-image('../images/discount_1');
-    }
-    &.special {
-      .background-image('../images/special_1');
-    }
-    &.invoice {
-      .background-image('../images/invoice_1');
-    }
-    &.guarantee {
-      .background-image('../images/guarantee_1');
-    }
-  }
-
   .bulletinBox {
     height: 28px;
     line-height: 28px;
@@ -278,7 +266,7 @@ export default {
 
     &.fade-enter-active,
     &.fade-leave-active {
-      transition: all .5s;
+      transition: all 0.5s;
     }
     &.fade-enter,
     &.fade-leave-to {
@@ -329,29 +317,6 @@ export default {
           line-height: 18px;
           margin-bottom: 12px;
           font-size: 16px;
-
-          .supportIcon {
-            width: 16px;
-            height: 16px;
-            background-size: 16px;
-            margin-right: 6px;
-
-            &.decrease {
-              .background-image('../images/decrease_2');
-            }
-            &.discount {
-              .background-image('../images/discount_2');
-            }
-            &.special {
-              .background-image('../images/special_2');
-            }
-            &.invoice {
-              .background-image('../images/invoice_2');
-            }
-            &.guarantee {
-              .background-image('../images/guarantee_2');
-            }
-          }
 
           .supportText {
             font-size: 12px;
