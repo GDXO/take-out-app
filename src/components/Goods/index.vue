@@ -1,79 +1,88 @@
 <template>
-  <div class="goodBox">
-    <div class="menuContainer" ref="menuBox">
-      <ul class="menuBox">
-        <li
-          v-for="(menuItem, index) of goods"
-          :key="index"
-          class="menuItemBox borderOnePx"
-          :class="{ current: currentIndex === index }"
-          @click="selectMenu(index, $event)"
-        >
-          <span class="menuText">
-            <LeftIcon
-              v-show="menuItem.type > 0"
-              class="menuIcon"
-              :iconType="menuItem.type"
-              :imageName="3"
-              :imageWidth="12"
-              :imageHeight="12"
-              :marginRight="2"
-            />{{ menuItem.name }}
-          </span>
-        </li>
-      </ul>
+  <div>
+    <div class="goodBox">
+      <div class="menuContainer" ref="menuBox">
+        <ul class="menuBox">
+          <li
+            v-for="(menuItem, index) of goods"
+            :key="index"
+            class="menuItemBox borderOnePx"
+            :class="{ current: currentIndex === index }"
+            @click="selectMenu(index, $event)"
+          >
+            <span class="menuText">
+              <LeftIcon
+                v-show="menuItem.type > 0"
+                class="menuIcon"
+                :iconType="menuItem.type"
+                :imageName="3"
+                :imageWidth="12"
+                :imageHeight="12"
+                :marginRight="2"
+              />{{ menuItem.name }}
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="goodsContainer" ref="goodsBox">
+        <ul class="goodsBox">
+          <li
+            class="goodItemBox goodItemHook"
+            v-for="(goodItem, goodIndex) of goods"
+            :key="goodIndex"
+          >
+            <h1 class="goodName">{{ goodItem.name }}</h1>
+            <ul>
+              <li
+                class="foodItemBox borderOnePx"
+                v-for="(foodItem, foodIndex) of goodItem.foods"
+                :key="foodIndex"
+                @click.stop="showFoodDetailFn(foodItem, $event)"
+              >
+                <div class="foodImgBox">
+                  <img
+                    alt="商品单项图片"
+                    width="57"
+                    height="57"
+                    :src="foodItem.icon"
+                  />
+                </div>
+                <div class="foodItemContent">
+                  <h2 class="foodName">{{ foodItem.name }}</h2>
+                  <p class="foodDesc">{{ foodItem.description }}</p>
+                  <div class="foodExtra">
+                    <span>月售{{ foodItem.sellCount }}份</span>
+                    <span>好评率{{ foodItem.rating }}%</span>
+                  </div>
+                  <div class="foodPrice">
+                    <span>
+                      <span class="priceIcon">￥</span>{{ foodItem.price }}
+                    </span>
+                    <span v-show="foodItem.oldPrice">
+                      <span class="priceIcon">￥</span>{{ foodItem.oldPrice }}
+                    </span>
+                  </div>
+                  <div class="cartControlContainer">
+                    <CartControl :food="foodItem" @addCount="dropBall" />
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <ShopCart
+        :deliveryPrice="seller.deliveryPrice"
+        :minDeliveryPrice="seller.minPrice"
+        :foodsList="selectedFoods"
+        ref="shopCart"
+      ></ShopCart>
     </div>
-    <div class="goodsContainer" ref="goodsBox">
-      <ul class="goodsBox">
-        <li
-          class="goodItemBox goodItemHook"
-          v-for="(goodItem, goodIndex) of goods"
-          :key="goodIndex"
-        >
-          <h1 class="goodName">{{ goodItem.name }}</h1>
-          <ul>
-            <li
-              class="foodItemBox borderOnePx"
-              v-for="(foodItem, foodIndex) of goodItem.foods"
-              :key="foodIndex"
-            >
-              <div class="foodImgBox">
-                <img
-                  alt="商品单项图片"
-                  width="57"
-                  height="57"
-                  :src="foodItem.icon"
-                />
-              </div>
-              <div class="foodItemContent">
-                <h2 class="foodName">{{ foodItem.name }}</h2>
-                <p class="foodDesc">{{ foodItem.description }}</p>
-                <div class="foodExtra">
-                  <span>月售{{ foodItem.sellCount }}份</span>
-                  <span>好评率{{ foodItem.rating }}%</span>
-                </div>
-                <div class="foodPrice">
-                  <span>
-                    <span class="priceIcon">￥</span>{{ foodItem.price }}
-                  </span>
-                  <span v-show="foodItem.oldPrice">
-                    <span class="priceIcon">￥</span>{{ foodItem.oldPrice }}
-                  </span>
-                </div>
-                <div class="cartControlContainer">
-                  <CartControl :food="foodItem" />
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <ShopCart
-      :deliveryPrice="seller.deliveryPrice"
-      :minDeliveryPrice="seller.minPrice"
-      :foodsList="selectedFoods"
-    ></ShopCart>
+    <FoodDetail
+      :selectedFood="detailFood"
+      ref="foodDetailEl"
+      @addCount="dropBall"
+    />
   </div>
 </template>
 
@@ -83,6 +92,7 @@ import BScroll from '@better-scroll/core'
 import LeftIcon from '@/components/LeftIcon/'
 import ShopCart from '@/components/ShopCart/'
 import CartControl from '@/components/CartControl/'
+import FoodDetail from '@/components/FoodDetail/'
 
 const ERR_CODE = 0
 
@@ -91,7 +101,8 @@ export default {
   components: {
     LeftIcon,
     ShopCart,
-    CartControl
+    CartControl,
+    FoodDetail
   },
   props: {
     seller: {
@@ -106,7 +117,8 @@ export default {
     return {
       goods: [],
       listHeight: [],
-      scrollY: 0
+      scrollY: 0,
+      detailFood: {}
     }
   },
   computed: {
@@ -140,8 +152,6 @@ export default {
       const { data } = await axios.get('/api/goods')
 
       if (data.errNo !== ERR_CODE) return false
-
-      console.log(data.data)
 
       this.goods = data.data
 
@@ -179,14 +189,31 @@ export default {
       }
     },
     selectMenu (index, evt) {
-      if (!evt._constructed) {
-        return false
-      }
+      if (!evt._constructed) return false
+
       const goodsBox = this.$refs.goodsBox
       const goodItemHook = goodsBox.getElementsByClassName('goodItemHook')
       const el = goodItemHook[index]
 
       this.goodsScroll.scrollToElement(el, 300)
+    },
+    dropBall (target) {
+      this.shopCartDropFn(target)
+    },
+    shopCartDropFn (target) {
+      // 体验优化, 异步加载下落动画
+      this.$nextTick(() => {
+        this.$refs.shopCart.dropBallFn(target)
+      })
+    },
+    showFoodDetailFn (foodItem, evt) {
+      if (!evt._constructed) return false
+
+      console.log(foodItem)
+
+      this.detailFood = foodItem
+
+      this.$refs.foodDetailEl.pageShowFn()
     }
   }
 }
@@ -219,10 +246,11 @@ export default {
         top: -1px;
         font-size: 12px;
         color: #20272f;
-        font-weight: 700;
         background: #fff;
 
         .menuText {
+          font-weight: 700;
+
           &:after {
             border: none;
           }
@@ -247,6 +275,7 @@ export default {
         line-height: 14px;
         vertical-align: middle;
         .border-1px(rgba(7, 17, 27, 0.1));
+        font-weight: normal;
 
         &.indentText {
           left: -16px;
@@ -307,11 +336,13 @@ export default {
 
         .foodDesc {
           line-height: 15px;
+          font-weight: normal;
         }
 
         .foodExtra {
           & > span {
             font-size: 10px;
+            font-weight: normal;
 
             &:last-child {
               margin-left: 6px;
@@ -347,7 +378,7 @@ export default {
           }
         }
 
-        .cartControlContainer{
+        .cartControlContainer {
           position: absolute;
           right: 0;
           bottom: 19px;
