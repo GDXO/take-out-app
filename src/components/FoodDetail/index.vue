@@ -46,7 +46,17 @@
           <p class="descText">{{ selectedFood.description }}</p>
         </div>
         <IntervalBox />
-        <div style="height: 200px"></div>
+        <div class="ratingContainer">
+          <div class="ratingTitle">商品评价</div>
+          <Rating
+            :desc="desc"
+            :selectedType="selectedType"
+            :showContent="showContent"
+            :ratingsData="selectedFood.ratings"
+            @changeSelectedType="changeSelectedTypeFn"
+            @toggleShowContent="toggleShowContentFn"
+          />
+        </div>
       </div>
     </div>
   </transition>
@@ -56,12 +66,18 @@
 import BScroll from '@better-scroll/core'
 import CartControl from '@/components/CartControl/'
 import IntervalBox from '@/components/Interval/'
+import Rating from '@/components/Rating/'
+
+const RATING_ALL = 2
+// const RATING_POSITIVE = 1
+// const RATING_NEGATIVE = 0
 
 export default {
   name: 'FoodDetail',
   components: {
     CartControl,
-    IntervalBox
+    IntervalBox,
+    Rating
   },
   props: {
     selectedFood: {
@@ -72,12 +88,28 @@ export default {
   },
   data () {
     return {
-      pageShowFlag: false
+      pageShowFlag: false,
+      selectedType: RATING_ALL,
+      showContent: false,
+      desc: {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
+      }
     }
   },
   methods: {
     pageShowFn () {
       this.pageShowFlag = true
+
+      // 初始化评论的数据状态
+      this.selectedType = RATING_ALL
+      this.showContent = false
+      this.desc = {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
+      }
 
       this.$nextTick(() => {
         if (!this.pageContainer) {
@@ -101,6 +133,18 @@ export default {
     },
     emitParentAddCountFn (target) {
       this.$emit('addCount', target)
+    },
+    changeSelectedTypeFn (btnType) {
+      this.selectedType = btnType
+      this.$nextTick(() => {
+        this.pageContainer.refresh()
+      })
+    },
+    toggleShowContentFn (contentType) {
+      this.showContent = contentType
+      this.$nextTick(() => {
+        this.pageContainer.refresh()
+      })
     }
   }
 }
@@ -111,11 +155,11 @@ export default {
 
 .foodDetailBox {
   width: 100%;
-  height: 100%;
-  background: #FFF;
+  background: #fff;
   position: fixed;
   top: 0;
   left: 0;
+  bottom: 46px;
 
   .headerBox {
     position: relative;
@@ -145,7 +189,6 @@ export default {
 
   .titleBox {
     padding: 18px;
-    background: #fff;
     position: relative;
     .border-1px(rgba(7, 17, 27, 0.2));
 
@@ -224,7 +267,6 @@ export default {
 
   .descBox {
     padding: 18px;
-    background: #fff;
     .border-1px(rgba(7, 17, 27, 0.2));
 
     .descTitle {
@@ -240,6 +282,17 @@ export default {
       color: rgb(77, 85, 93);
       line-height: 24px;
       margin: 6px 8px;
+    }
+  }
+
+  .ratingContainer{
+    padding-top: 18px;
+
+    .ratingTitle{
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 18px;
+      color: rgb(7, 17, 27);
     }
   }
 
