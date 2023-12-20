@@ -209,8 +209,6 @@ export default {
     showFoodDetailFn (foodItem, evt) {
       if (!evt._constructed) return false
 
-      console.log(foodItem)
-
       this.detailFood = foodItem
 
       this.$refs.foodDetailEl.pageShowFn()

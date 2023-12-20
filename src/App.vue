@@ -41,6 +41,8 @@ export default {
 
       if (data.errNo !== ERR_CODE) return false
 
+      console.log(data.data)
+
       this.seller = data.data
     }
   }

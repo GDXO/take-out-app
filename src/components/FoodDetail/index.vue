@@ -56,6 +56,45 @@
             @changeSelectedType="changeSelectedTypeFn"
             @toggleShowContent="toggleShowContentFn"
           />
+          <div class="ratingMainBox">
+            <ul v-if="selectedFood.ratings && selectedFood.ratings.length">
+              <li
+                class="ratingItemBox borderOnePx"
+                v-for="(rating, ratingIndex) of selectedFood.ratings"
+                :key="ratingIndex"
+                v-show="ratingShow(rating.rateType, rating.text)"
+              >
+                <p class="ratingItemHeader cleanBoth">
+                  <span class="ratingTime">{{
+                    rating.rateTime | formateDate
+                  }}</span>
+                  <span class="ratingUser">
+                    {{ rating.username }}
+                    <img
+                      width="12"
+                      height="12"
+                      :src="rating.avatar"
+                      alt="评论者头像"
+                    />
+                  </span>
+                </p>
+                <div class="ratingContentBox">
+                  <svg
+                    class="icon ratingUpIcon"
+                    aria-hidden="true"
+                    v-if="rating.rateType === 0"
+                  >
+                    <use xlink:href="#take-thumb_up"></use>
+                  </svg>
+                  <svg class="icon ratingDownIcon" aria-hidden="true" v-else>
+                    <use xlink:href="#take-thumb_down"></use>
+                  </svg>
+                  <span>{{ rating.text }}</span>
+                </div>
+              </li>
+            </ul>
+            <div class="noRatingBox" v-else>暂无评价内容</div>
+          </div>
         </div>
       </div>
     </div>
@@ -66,11 +105,12 @@
 import BScroll from '@better-scroll/core'
 import CartControl from '@/components/CartControl/'
 import IntervalBox from '@/components/Interval/'
-import Rating from '@/components/Rating/'
+import Rating from '@/components/RatingModule/'
+import { timeFormat } from '@/assets/js/utils'
 
 const RATING_ALL = 2
-// const RATING_POSITIVE = 1
-// const RATING_NEGATIVE = 0
+const RATING_POSITIVE = 1
+const RATING_NEGATIVE = 0
 
 export default {
   name: 'FoodDetail',
@@ -98,6 +138,11 @@ export default {
       }
     }
   },
+  filters: {
+    formateDate (time) {
+      return timeFormat(time, '-', true)
+    }
+  },
   methods: {
     pageShowFn () {
       this.pageShowFlag = true
@@ -114,7 +159,8 @@ export default {
       this.$nextTick(() => {
         if (!this.pageContainer) {
           this.pageContainer = new BScroll(this.$refs.pageContainer, {
-            click: true
+            click: true,
+            probeType: 3
           })
         } else {
           this.pageContainer.refresh()
@@ -145,6 +191,15 @@ export default {
       this.$nextTick(() => {
         this.pageContainer.refresh()
       })
+    },
+    ratingShow (type, text) {
+      if (this.showContent && !text) return false
+      if (this.selectedType === RATING_ALL) return true
+      else if (type * 1 + 1 === RATING_POSITIVE) {
+        return this.selectedType === RATING_POSITIVE
+      } else if (type * 1 - 1 === RATING_NEGATIVE) {
+        return this.selectedType === RATING_NEGATIVE
+      }
     }
   }
 }
@@ -285,14 +340,75 @@ export default {
     }
   }
 
-  .ratingContainer{
+  .ratingContainer {
     padding-top: 18px;
 
-    .ratingTitle{
+    .ratingTitle {
       font-size: 14px;
       font-weight: 500;
       margin: 0 18px;
       color: rgb(7, 17, 27);
+    }
+
+    .ratingItemBox {
+      padding: 16px 18px;
+      .border-1px(rgba(7, 17, 27, 0.1));
+
+      .ratingItemHeader {
+        margin-bottom: 6px;
+        color: rgb(147, 153, 159);
+        line-height: 12px;
+        font-size: 0;
+        font-weight: normal;
+
+        & > span {
+          font-size: 10px;
+        }
+
+        .ratingTime {
+          float: left;
+        }
+
+        .ratingUser {
+          float: right;
+
+          img {
+            border-radius: 50%;
+            margin-left: 6px;
+            vertical-align: top;
+          }
+        }
+      }
+
+      .ratingContentBox {
+        font-size: 0;
+        font-weight: normal;
+
+        .icon {
+          font-size: 12px;
+          line-height: 24px;
+
+          &.ratingUpIcon {
+            color: rgb(0, 160, 233);
+          }
+
+          &.ratingDownIcon {
+            color: rgb(147, 153, 159);
+          }
+        }
+
+        & > span {
+          font-size: 12px;
+          color: rgb(7, 17, 27);
+          margin-left: 4px;
+        }
+      }
+    }
+
+    .noRatingBox {
+      padding: 16px 18px;
+      font-size: 12px;
+      color: rgb(147, 153, 159);
     }
   }
 

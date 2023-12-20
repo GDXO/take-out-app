@@ -72,10 +72,10 @@ export default {
       height: 19px;
       background-size: 20px 19px;
       margin-right: 22px;
-    }
 
-    &:last-child {
-      margin-right: 0;
+      &:last-child {
+        margin-right: 0;
+      }
     }
 
     .starSolid {
@@ -97,10 +97,10 @@ export default {
       height: 14.5px;
       background-size: 15px 14.5px;
       margin-right: 6.25px;
-    }
 
-    &:last-child {
-      margin-right: 0;
+      &:last-child {
+        margin-right: 0;
+      }
     }
 
     .starSolid {
@@ -122,10 +122,10 @@ export default {
       height: 9.5px;
       background-size: 10px 9.5px;
       margin-right: 3.5px;
-    }
 
-    &:last-child {
-      margin-right: 0;
+      &:last-child {
+        margin-right: 0;
+      }
     }
 
     .starSolid {

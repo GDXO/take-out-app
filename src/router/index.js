@@ -17,7 +17,7 @@ const routes = [
   {
     path: '/ratings',
     name: 'PageRatings',
-    component: () => import(/* webpackChunkName: "pageGoods" */ '@/components/Ratings/')
+    component: () => import(/* webpackChunkName: "pageGoods" */ '@/components/RatingsPage/')
   },
   {
     path: '/sellers',
