@@ -116,20 +116,20 @@ export default {
     .background-image('../images/guarantee_3');
   }
 
-  // &.decrease4 {
-  //   .background-image('../images/decrease_4');
-  // }
-  // &.discount4 {
-  //   .background-image('../images/discount_4');
-  // }
-  // &.special4 {
-  //   .background-image('../images/special_4');
-  // }
-  // &.invoice4 {
-  //   .background-image('../images/invoice_4');
-  // }
-  // &.guarantee3 {
-  //   .background-image('../images/guarantee_3');
-  // }
+  &.decrease4 {
+    .background-image('../images/decrease_4');
+  }
+  &.discount4 {
+    .background-image('../images/discount_4');
+  }
+  &.special4 {
+    .background-image('../images/special_4');
+  }
+  &.invoice4 {
+    .background-image('../images/invoice_4');
+  }
+  &.guarantee4 {
+    .background-image('../images/guarantee_4');
+  }
 }
 </style>

@@ -12,12 +12,15 @@
         <router-link to="/sellers">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller" />
+    <keep-alive>
+      <router-view :seller="seller" />
+    </keep-alive>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { getUrlParams } from '@/assets/js/utils'
 import CHeader from '@/components/Header/'
 
 const ERR_CODE = 0
@@ -29,7 +32,12 @@ export default {
   },
   data () {
     return {
-      seller: {}
+      seller: {
+        id: (() => {
+          const params = getUrlParams()
+          return params.id
+        })()
+      }
     }
   },
   created () {
@@ -37,13 +45,13 @@ export default {
   },
   methods: {
     async getSellers () {
-      const { data } = await axios.get('/api/sellers')
+      const { data } = await axios.get(`/api/sellers?id=${this.seller.id}`)
 
       if (data.errNo !== ERR_CODE) return false
 
-      console.log(data.data)
+      this.seller = Object.assign({}, this.seller, data.data)
 
-      this.seller = data.data
+      console.log(this.seller)
     }
   }
 }
@@ -52,23 +60,23 @@ export default {
 <style lang="less">
 @import '@/assets/css/mixins.less';
 
-.tabs{
+.tabs {
   display: flex;
   width: 100%;
   height: 40px;
   line-height: 40px;
-  .border-1px(rgba(7, 17, 27, .1));
+  .border-1px(rgba(7, 17, 27, 0.1));
 
-  .tabItem{
+  .tabItem {
     flex: 1;
     text-align: center;
 
-    & > a{
+    & > a {
       display: block;
       font-size: 14px;
       color: rgb(77, 85, 93);
 
-      &.active{
+      &.active {
         color: rgb(240, 20, 20);
       }
     }
