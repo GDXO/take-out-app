@@ -318,6 +318,10 @@ export default {
       margin-bottom: 12px;
     }
 
+    .realityContainer{
+      overflow: hidden;
+    }
+
     .realityMainBox {
       overflow: hidden;
       white-space: nowrap;
