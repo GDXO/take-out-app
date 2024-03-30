@@ -50,8 +50,6 @@ export default {
       if (data.errNo !== ERR_CODE) return false
 
       this.seller = Object.assign({}, this.seller, data.data)
-
-      console.log(this.seller)
     }
   }
 }
